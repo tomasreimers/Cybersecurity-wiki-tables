@@ -1,11 +1,3 @@
-window.DTPrintOptionsList = function (list){
-    var toReturn = "";
-    for (var i = 0; i < list.length; i++){
-        toReturn += "<option value='" + list[i][0].split(" ")[0] + "'>" + list[i][0] + "</option>";
-        toReturn += window.DTPrintOptionsList(list[i][1]);
-    }
-    return toReturn;
-}
 window.DTGetAffectedTable = function (el){
     return $(el).parents(".dataTableFilterSearchBar").next().children('.datatable')[0];
 }
@@ -69,6 +61,18 @@ window.DTSearchOther = function (el, alreadyDone){
 // detect if we need to do anything
 $(document).ready(function (){
     if ($(".datatable").length > 0){
+        // get categories 
+        var categories = [];
+        $("table.dt_categories").first().find("td").each(function (index, el){
+            categories.push($(el).html().trim());
+        });
+        $("table.dt_categories").remove();
+        // get types
+         var types = [];
+        $("table.dt_types").first().find("td").each(function (index, el){
+            types.push($(el).html().trim());
+        });
+        $("table.dt_types").remove();
         // add table header
         $(".datatable").prepend("<thead></thead>");
         $(".datatable").each(function (index, el){
@@ -81,7 +85,6 @@ $(document).ready(function (){
         customFilters += "<div class='dataTableFilterSearchBar'>";
             customFilters += "<div class='dataTableSearchBarType'>";
             customFilters += "<div class='dataTable_filter_header'>Types</div>";
-                var types = ["Government Report", "Industry Report", "Independent Report", "Government Hearing", "Book", "Journal Article", "Article"];
                 for (var i = 0; i < types.length; i++){
                     customFilters += "<div>";
                         customFilters += "<input type='checkbox' class='typeFilterCheckbox' onchange='window.DTSearchChangeType(this)' checked='checked' value='" + types[i] + "' />";
@@ -92,72 +95,10 @@ $(document).ready(function (){
             customFilters += "<div class='dataTableSearchBarCategory'>";
             customFilters += "<div class='dataTable_filter_header'>Categories</div>";
                 customFilters += "<select class='categoryFilterSelect' onchange='window.DTSearchChangeCategory(this)'>";
-                    var categories = [
-                        ["1. Overview", []],
-                        ["3. Threats and Actors", [
-                            ["3.1 The Threats and Skeptics", []],
-                            ["3.2 Actors and Incentives", [
-                                ["3.2.1 States", []],
-                                ["3.2.2 Groups", []],
-                                ["3.2.3 Hacktivists", []],
-                                ["3.2.4 Terrorists", []],
-                                ["3.2.5 Criminals and Criminal Organizations", []]
-                            ]],
-                            ["3.3 Security Targets", [
-                                ["3.3.1 Public Critical Infrastructure", [
-                                    ["3.3.1.1 Government Networks (.gov)", []],
-                                    ["3.3.1.2 Military Networks (.mil)", []]
-                                ]],
-                                ["3.3.2 Private Critical Infrastructure", [
-                                    ["3.3.2.1 Electricity, Oil and Natural Gas", []],
-                                    ["3.3.2.2 Financial Institutions and Networks", []],
-                                    ["3.3.2.3 Transportation", []],
-                                    ["3.3.2.4 Water, Sewer, etc.", []]
-                                ]],
-                                ["3.3.3 Communications", [
-                                    ["3.3.3.1 Telephone", []],
-                                    ["3.3.3.2 Public Data Networks", []],
-                                    ["3.3.3.3 Cloud Computing", []]
-                                ]]
-                            ]]
-                        ]],
-                        ["4. Issues", [
-                            ["4.1 Metrics", []],
-                            ["4.2 Economics of Cybersecurity", [
-                                ["4.2.1 Risk Management and Investment", []],
-                                ["4.2.2 Incentives", []],
-                                ["4.2.3 Insurance", []],
-                                ["4.2.4 Behavioral Economics", []],
-                                ["4.2.5 Market Failure", []]
-                            ]],
-                            ["4.3 Supply Chain Issues", []],
-                            ["4.4 Usability/Human Factors", []],
-                            ["4.5 Psychology and Politics", []],
-                            ["4.6 Information Sharing/Disclosure", []],
-                            ["4.7 Public-Private Cooperation", []],
-                            ["4.8 Attribution", []],
-                            ["4.9 Identity Management", []],
-                            ["4.10 Privacy", []],
-                            ["4.11 Cybercrime", []],
-                            ["4.12 Cyberwar", []],
-                            ["4.13 Espionage", [
-                                ["4.13.1 Government to Government", []],
-                                ["4.13.2 Industrial", []],
-                                ["4.13.3 Media Perceptions", []]
-                            ]]
-                        ]],
-                        ["5. Approaches", [
-                            ["5.1 Regulation/Liability", []],
-                            ["5.2 Private Efforts/Organizations", []],
-                            ["5.3 Government Organizations", []],
-                            ["5.4 International Cooperation", []],
-                            ["5.5 International Law (including Laws of War)", []],
-                            ["5.6 Deterrence", []],
-                            ["5.7 Technology", []]
-                        ]]
-                    ];
                     customFilters += "<option value='' selected='selected'>All</option>";
-                    customFilters += window.DTPrintOptionsList(categories);
+                    for (var i = 0; i < categories.length; i++){
+                        customFilters += "<option value='" + categories[i].split(" ")[0] + "'>" + categories[i] + "</option>"
+                    }
                 customFilters += "</select>";
                 customFilters += "<div><input type='checkbox' class='categoryFilterCheckbox' onclick='window.DTSearchChangeCategory($(this).parent().siblings(\"select\")[0])'/><span>Exclude Subcatgeories</span></div>";
             customFilters += "</div>";
