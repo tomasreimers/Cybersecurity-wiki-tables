@@ -20,7 +20,10 @@ window.DTSearchChangeCategory = function (el, dontIterate){
     catNum = "(^|,)" + catNum;
     // don't include subcategory
     if ($(el).siblings('div').children('input')[0].checked){
-        catNum += " ";
+        catNum += "\.? "; // original \.? because 1 deep numbers have trailing dot (i.e. "1.")
+    }
+    else {
+        catNum += "( |\.)";
     }
     // filter
     $(window.DTGetAffectedTable(el)).dataTable().fnFilter(catNum, 4, true, false);
@@ -97,7 +100,7 @@ $(document).ready(function (){
                 customFilters += "<select class='categoryFilterSelect' onchange='window.DTSearchChangeCategory(this)'>";
                     customFilters += "<option value='' selected='selected'>All</option>";
                     for (var i = 0; i < categories.length; i++){
-                        customFilters += "<option value='" + categories[i].split(" ")[0] + "'>" + categories[i] + "</option>"
+                        customFilters += "<option value='" + categories[i].split(" ")[0].replace(/\.$/, "") + "'>" + categories[i] + "</option>"
                     }
                 customFilters += "</select>";
                 customFilters += "<div><input type='checkbox' class='categoryFilterCheckbox' onclick='window.DTSearchChangeCategory($(this).parent().siblings(\"select\")[0])'/><span>Exclude Subcatgeories</span></div>";
