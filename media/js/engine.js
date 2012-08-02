@@ -12,7 +12,7 @@ window.DTSearchChangeCategory = function (el, dontIterate){
     var catNum = el.value;
     // the all option
     if (catNum == ""){
-        $(window.DTGetAffectedTable(el)).dataTable().fnFilter("(.*)", 4, true, false);
+        $(window.DTGetAffectedTable(el)).dataTable().fnFilter('', 4, true, false);
         return;
     }
     // encode for regex
@@ -40,7 +40,7 @@ window.DTSearchChangeType = function (el, dontIterate){
         selectedTypes += "(" + el.value + ")|";
     });
     // create regex
-    selectedTypes = "^(" + selectedTypes.substring(0, selectedTypes.length - 1) + ")$";
+    selectedTypes = "^(" + selectedTypes.substring(0, selectedTypes.length - 1) + ")";
     // filter
     $(window.DTGetAffectedTable(el)).dataTable().fnFilter(selectedTypes, 3, true, false);
     if (typeof(dontIterate) === 'undefined'){
