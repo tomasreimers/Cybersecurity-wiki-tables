@@ -151,7 +151,7 @@ $(document).ready(function (){
                 customFilters += "<div class='DTFilterHeader'>Search</div>";
                 customFilters += "<input type='text' onkeyup='window.DTSearchByAuthorOrTitle(this)' class='searchFilterText' placeholder='Free Text Search'>";
             customFilters += "</div>";
-            customFilters += "<a href='http://cyber.law.harvard.edu/cybersecurity/Help' class='DTSearchBottomLink'>Help</a>"
+            customFilters += "<a href='http://cyber.law.harvard.edu/cybersecurity/Help#How_to_Use_the_Filter' class='DTSearchBottomLink'>Help</a>"
         customFilters += "</div>";
         // add to every table
         $(".datatable").each(function (index, el){
