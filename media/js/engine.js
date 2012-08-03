@@ -118,11 +118,12 @@ $(document).ready(function (){
             "aoColumns": [
               { "sWidth": "20%" },
               { "sWidth": "7%" },
-              { "sWidth": "35%" },
-              { "sWidth": "5%" },
+              { "sWidth": "32%" },
+              { "sWidth": "8%" },
               { "sWidth": "8%" },
               { "sWidth": "25%" }
-            ]
+            ],
+            "iDisplayLength": 25
         });
         // create custom filter widget
         var customFilters = "";
