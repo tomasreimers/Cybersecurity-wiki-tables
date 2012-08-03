@@ -49,3 +49,6 @@
     font-weight:bold;
     font-size:16px;
 }
+table.dataTable thead th {
+    padding:3px !important;
+}
