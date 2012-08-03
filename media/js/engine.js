@@ -1,36 +1,59 @@
+/*
+ * Returns the table that a form field in the filter tool will affect
+ *
+ * el - the form element
+ */
 window.DTGetAffectedTable = function (el){
-    return $(el).parents(".dataTableFilterSearchBar").next().children('.datatable')[0];
+    return $(el).parents(".DTFilterSearchBar").next().children('.datatable')[0];
 }
+/*
+ * The backend to free text search
+ *
+ * el - the search bar
+ * dontIterate - Whether the other fields have to be searched
+ */
 window.DTSearchByAuthorOrTitle = function (el, dontIterate){
     $(window.DTGetAffectedTable(el)).dataTable().fnFilter(el.value);
     if (typeof(dontIterate) === 'undefined'){
         window.DTSearchOther(el, 'search');
     }
 }
+/*
+ * Changes the category
+ *
+ * el - the drop down selection menu
+ * dontInterate - Whether or not the other fields have to be searched
+ */
 window.DTSearchChangeCategory = function (el, dontIterate){
-    // get actual number
+    // get actual number of the category
     var catNum = el.value;
-    // the all option
+    // if 'all' is selected remove any filter
     if (catNum == ""){
-        $(window.DTGetAffectedTable(el)).dataTable().fnFilter('', 4, true, false);
+        $(window.DTGetAffectedTable(el)).dataTable().fnFilter('', 5, true, false);
         return;
     }
-    // encode for regex
+    // convert the selection for regex
     catNum = catNum.replace(/\./g, "\\.");
     catNum = "(^|,)" + catNum;
-    // don't include subcategory
+    // check if the don't include subcategories option is checked and act accordingly
     if ($(el).siblings('div').children('input')[0].checked){
-        catNum += "\.? "; // original \.? because 1 deep numbers have trailing dot (i.e. "1.")
+        catNum += "\.? "; // \.? because numbers that aren't subcategories have trailing dot (i.e. "1.")
     }
     else {
         catNum += "( |\.)";
     }
-    // filter
-    $(window.DTGetAffectedTable(el)).dataTable().fnFilter(catNum, 4, true, false);
+    // actually filter
+    $(window.DTGetAffectedTable(el)).dataTable().fnFilter(catNum, 5, true, false);
     if (typeof(dontIterate) === 'undefined'){
         window.DTSearchOther(el, 'category');
     }
 }
+/*
+ * Changes the type
+ *
+ * el - the checkbox
+ * dontInterate - Whether or not the other fields have to be searched
+ */
 window.DTSearchChangeType = function (el, dontIterate){
     // Get selected types
     var selectedTypes = "";
@@ -42,52 +65,70 @@ window.DTSearchChangeType = function (el, dontIterate){
     // create regex
     selectedTypes = "^(" + selectedTypes.substring(0, selectedTypes.length - 1) + ")";
     // filter
-    $(window.DTGetAffectedTable(el)).dataTable().fnFilter(selectedTypes, 3, true, false);
+    $(window.DTGetAffectedTable(el)).dataTable().fnFilter(selectedTypes, 4, true, false);
     if (typeof(dontIterate) === 'undefined'){
         window.DTSearchOther(el, 'type');
     }
 }
-// Odd multiple table error if you are filtering on one column, the filter is applied to all all tables but the other tables are not redrawn
-// to fix we simply filter the table again
+/*
+ * Searches the other two fields.
+ * As I understand, when you filter, datatable actually filters the content and then redraws the table of interest.
+ * The problem is that if you have mutliple tables filter will filter ALL the tables and then only redraw one, 
+ * normally this wouldn't be a problem, but when you are searchign multiple columns it is.
+ * To get around this, we simply must filter a table on every column we are concern about.
+ *
+ * el - Whatever invoked the other search
+ * alreadyDone - what search was already completed
+ */
 window.DTSearchOther = function (el, alreadyDone){
-    var $searchContain = $(el).parents('.dataTableFilterSearchBar');
+    var $searchContain = $(el).parents('.DTFilterSearchBar');
     if (alreadyDone != 'type'){
-        window.DTSearchChangeType($searchContain.find(".dataTableSearchBarType input").first()[0], true);
+        window.DTSearchChangeType($searchContain.find(".DTSearchBarType input").first()[0], true);
     }
     if (alreadyDone != 'category'){
-        window.DTSearchChangeCategory($searchContain.find(".dataTableSearchBarCategory select").first()[0], true);
+        window.DTSearchChangeCategory($searchContain.find(".DTSearchBarCategory select").first()[0], true);
     }
     if (alreadyDone != 'search'){
-        window.DTSearchByAuthorOrTitle($searchContain.find(".dataTableSearchBarSearch input").first()[0], true);
+        window.DTSearchByAuthorOrTitle($searchContain.find(".DTSearchBarSearch input").first()[0], true);
     }
 }
-// detect if we need to do anything
+// init the datatables
 $(document).ready(function (){
+    // detect if we need to do anything
     if ($(".datatable").length > 0){
-        // get categories 
+        // get categories from user generated table
         var categories = [];
         $("table.dt_categories").first().find("td").each(function (index, el){
             categories.push($(el).html().trim());
         });
         $("table.dt_categories").remove();
-        // get types
+        // get types from user generated table
          var types = [];
         $("table.dt_types").first().find("td").each(function (index, el){
             types.push($(el).html().trim());
         });
         $("table.dt_types").remove();
-        // add table header
+        // add table header, needed because wiki markup doesn't automatically add it
         $(".datatable").prepend("<thead></thead>");
         $(".datatable").each(function (index, el){
             $(el).find("th").first().parent().appendTo($(el).find("thead"));
         });
         // convert to datatable
-        $(".datatable").dataTable();
-        // create custom filter table
+        $(".datatable").dataTable({
+            "aoColumns": [
+              { "sWidth": "20%" },
+              { "sWidth": "7%" },
+              { "sWidth": "35%" },
+              { "sWidth": "5%" },
+              { "sWidth": "8%" },
+              { "sWidth": "25%" }
+            ]
+        });
+        // create custom filter widget
         var customFilters = "";
-        customFilters += "<div class='dataTableFilterSearchBar'>";
-            customFilters += "<div class='dataTableSearchBarType'>";
-            customFilters += "<div class='dataTable_filter_header'>Types</div>";
+        customFilters += "<div class='DTFilterSearchBar'>";
+            customFilters += "<div class='DTSearchBarType'>";
+            customFilters += "<div class='DTFilterHeader'>Types</div>";
                 for (var i = 0; i < types.length; i++){
                     customFilters += "<div>";
                         customFilters += "<input type='checkbox' class='typeFilterCheckbox' onchange='window.DTSearchChangeType(this)' checked='checked' value='" + types[i] + "' />";
@@ -95,8 +136,8 @@ $(document).ready(function (){
                     customFilters += "</div>";
                 }
             customFilters += "</div>";
-            customFilters += "<div class='dataTableSearchBarCategory'>";
-            customFilters += "<div class='dataTable_filter_header'>Categories</div>";
+            customFilters += "<div class='DTSearchBarCategory'>";
+            customFilters += "<div class='DTFilterHeader'>Categories</div>";
                 customFilters += "<select class='categoryFilterSelect' onchange='window.DTSearchChangeCategory(this)'>";
                     customFilters += "<option value='' selected='selected'>All</option>";
                     for (var i = 0; i < categories.length; i++){
@@ -105,16 +146,17 @@ $(document).ready(function (){
                 customFilters += "</select>";
                 customFilters += "<div><input type='checkbox' class='categoryFilterCheckbox' onclick='window.DTSearchChangeCategory($(this).parent().siblings(\"select\")[0])'/><span>Exclude Subcatgeories</span></div>";
             customFilters += "</div>";
-            customFilters += "<div class='dataTableSearchBarSearch'>";
-                customFilters += "<div class='dataTable_filter_header'>Search</div>";
-                customFilters += "<input type='text' onkeyup='window.DTSearchByAuthorOrTitle(this)' class='searchFilterText' placeholder='Title or Author'>";
+            customFilters += "<div class='DTSearchBarSearch'>";
+                customFilters += "<div class='DTFilterHeader'>Search</div>";
+                customFilters += "<input type='text' onkeyup='window.DTSearchByAuthorOrTitle(this)' class='searchFilterText' placeholder='Free Text Search'>";
             customFilters += "</div>";
+            customFilters += "<a href='http://cyber.law.harvard.edu/cybersecurity/Help' class='DTSearchBottomLink'>Help</a>"
         customFilters += "</div>";
         // add to every table
         $(".datatable").each(function (index, el){
             $(el).parent().before(customFilters);
         });
-        // add all necessary configurations
+        // add all necessary configurations passed to the template
         $(".datatable").each(function (index, el){
             // get settings holder
             var settingsHolder = $(el).parent().prev()[0];

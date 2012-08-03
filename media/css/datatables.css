@@ -1,4 +1,4 @@
-.dataTableFilterSearchBar {
+.DTFilterSearchBar {
     background-color: #EAEBFF;
     border: 1px solid #D3D6FF;
     -webkit-border-radius: 5px;
@@ -6,8 +6,9 @@
     border-radius: 5px;
     margin-bottom:10px;
     margin-top:10px;
+    position: relative;
 }
-.dataTableFilterSearchBar > div {
+.DTSearchBarType, .DTSearchBarCategory, .DTSearchBarSearch {
     display: inline-block;
     width:33%;
     vertical-align: top;
@@ -16,16 +17,21 @@
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
     box-sizing: border-box;         /* Opera/IE 8+ */
 }
-.dataTableFilterSearchBar .dataTableSearchBarType div {
+.DTSearchBottomLink {
+    position:absolute;
+    bottom:5px;
+    right:5px;
+}
+.DTFilterSearchBar .DTSearchBarType div {
     display: inline-block;
 }
-.dataTableFilterSearchBar .dataTableSearchBarCategory select {
+.DTFilterSearchBar .DTSearchBarCategory select {
     width:90%;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
     box-sizing: border-box;         /* Opera/IE 8+ */
 }
-.dataTableFilterSearchBar .dataTableSearchBarSearch input {
+.DTFilterSearchBar .DTSearchBarSearch input {
     margin:10px;
     margin-left:0;
     margin-right:0;
@@ -35,9 +41,9 @@
     box-sizing: border-box;         /* Opera/IE 8+ */
 }
 .dataTables_filter {
-    margin-bottom:5px;
+    display: none;
 }
-.dataTable_filter_header {
+.DTFilterHeader {
     display: block !important;
     margin-bottom:5px;
     font-weight:bold;
