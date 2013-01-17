@@ -55,6 +55,8 @@ The basic logic is:
 5. Add the filter widget before the table, bind any changes to trigger the filter functions
 6. Change all the filter widget options based on the data-attributes configuration, this will trigger the table to update
 
-## Copyright
+## Copyright and License
 
-Copyright President and Fellows of Harvard College, 2012
+Copyright President and Fellows of Harvard College, 2013
+
+Licensed under the MIT License.
